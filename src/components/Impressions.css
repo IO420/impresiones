@@ -6,8 +6,9 @@
     border-radius: 4px;
     width: 90%;
     max-width: 1100px;
+    height: 550px;
+    min-height: 550px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-height: 550px;
     overflow: hidden;
 }
 
@@ -23,19 +24,14 @@
     padding-bottom: 5px;
 }
 
-.formContainer {
-    margin-bottom: 1rem;
-}
 
 .containerInformation {
     max-width: 400px;
-    margin: 10px 0;
 }
 
 .input-label {
     font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+    font-weight: bold;
     display: block;
 }
 
@@ -44,42 +40,8 @@
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 1rem;
-}
-
-.input-field {
-    flex: 1;
-    min-width: 200px;
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.button {
-    padding: 0.5rem 1.25rem;
-    font-size: 1rem;
-    border: none;
-    color: #ffffff;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.button-search {
-    background-color: #2563eb;
-}
-
-.button-search:hover {
-    background-color: #1d4ed8;
-}
-
-.button-charge {
-    background-color: #16a34a;
-}
-
-.button-charge:hover {
-    background-color: #15803d;
 }
 
 .selection {
@@ -157,6 +119,7 @@
     background-position: center;
     overflow: hidden;
     z-index: -1;
+    opacity: 0.5;
 }
 
 .img::after {
@@ -168,6 +131,14 @@
 
 @media(max-width:600px) {
     .impressions-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         max-width: 85%;
+        height: auto;
+    }
+    .lineSeparator{
+        padding-bottom: 0;
     }
 }

@@ -1,0 +1,28 @@
+.label {
+    position: block;
+    margin: 5px;
+}
+
+.containerLogin {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    height: 400px;
+    border-radius: 4px;
+    padding: 1.5rem;
+}
+
+.textHeader {
+    font-weight: bold;
+    font-size: 1.75rem;
+    text-align: center;
+    margin: 5px;
+}
+
+.containerInput {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}

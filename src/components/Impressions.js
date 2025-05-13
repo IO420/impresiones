@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './Impressions.css';
+import './login.css';
 
 export const Impressions = () => {
     const [numero, setNumero] = useState('');
@@ -22,9 +22,7 @@ export const Impressions = () => {
     };
 
     return (
-        <div className="impressions-container">
-            <h3 className="impressions-title lineSeparator">IMPRESIONES</h3>
-
+        <>
             <div className="formContainer">
                 <div className="containerInformation">
                     <label className="input-label">No.Cuenta</label>
@@ -129,8 +127,6 @@ export const Impressions = () => {
                     </div>
                 )}
             </div>
-
-            <div className="img"></div>
-        </div>
+        </>
     );
 };

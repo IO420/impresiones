@@ -1,23 +1,53 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { envConfig } from '../envConfigurations/EnvConfigurations';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 
 export const Impressions = () => {
-    const [numero, setNumero] = useState('');
-    const [hojas, setHojas] = useState('');
+    const [numAccount, setNumAccount] = useState('');
+    const [pages, setPages] = useState('');
     const [view, setView] = useState('impresiones');
     const [folio, setFolio] = useState('');
-    const [monto, setMonto] = useState('');
-    const [fecha, setFecha] = useState('');
+    const [amount, setAmount] = useState('');
+    const [date, setDate] = useState('');
     const [error, setError] = useState('');
     const [alert, setAlert] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+    const [showError, setShowError] = useState(false);
     const [studentData, setStudentData] = useState(null);
+
+    //restrict this month//
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    const minFecha = new Date(year, month, 1).toISOString().split('T')[0];
+    const maxFecha = new Date(year, month + 1, 0).toISOString().split('T')[0];
+    //restrict this month//
 
     const url = envConfig().apiUrl;
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
+
+    //fadeOut alert and error 
+    useEffect(() => {
+        if (alert) {
+            setShowAlert(true);
+            const timeout = setTimeout(() => setShowAlert(false), 6000);
+            return () => clearTimeout(timeout);
+        }
+    }, [alert]);
+
+    useEffect(() => {
+        if (error) {
+            setShowError(true);
+            const timeout = setTimeout(() => setShowError(false), 6000);
+            return () => clearTimeout(timeout);
+        }
+    }, [error]);
+    //fadeOut alert and error//
+
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -26,7 +56,7 @@ export const Impressions = () => {
     const handleBuscar = async () => {
         setAlert('')
         setError('')
-        if (!numero) {
+        if (!numAccount) {
             setError('Ingresa un numero de cuenta')
             return;
         }
@@ -34,15 +64,12 @@ export const Impressions = () => {
             const response = await axios.post(
                 `${url}/student`,
                 {
-                    numAccount: numero,
+                    numAccount: numAccount,
                 },
-                {
-                    headers,
-                }
+                { headers }
             );
             const data = response.data;
             setStudentData(data);
-            setAlert('Estudiante encontrado');
         } catch (error) {
             setError(error.response?.data?.error || 'No se encontró el estudiante');
             setStudentData(null);
@@ -56,7 +83,7 @@ export const Impressions = () => {
             setError('Error busca denuevo al estudiante');
             return;
         }
-        if (!hojas) {
+        if (!pages) {
             setError('Ingresa el numero de hojas a imprimir')
             return;
         }
@@ -64,15 +91,15 @@ export const Impressions = () => {
             await axios.post(
                 `${url}/impressions`,
                 {
-                    numAccount: numero,
-                    pages: parseInt(hojas),
-                    cost: parseInt(hojas),
+                    numAccount: numAccount,
+                    pages: parseInt(pages),
+                    cost: parseInt(pages),
                 },
                 { headers }
             );
-            setAlert('Cobro realizado correctamente');
             handleBuscar()
-            setHojas('')
+            setAlert('Cobro realizado correctamente');
+            setPages('')
         } catch (error) {
             setError(error.response?.data?.error || 'Error al realizar el cobro');
         }
@@ -89,11 +116,11 @@ export const Impressions = () => {
             setError('Ingresa el numero de folio')
             return;
         }
-        if (!monto) {
+        if (!amount) {
             setError('Ingresa el monto')
             return;
         }
-        if (!fecha) {
+        if (!date) {
             setError('Ingresa la fecha del ticket')
             return;
         }
@@ -102,17 +129,17 @@ export const Impressions = () => {
                 `${url}/receipt`,
                 {
                     fol: folio,
-                    amount: parseFloat(monto),
-                    date: fecha,
-                    numAccount: numero,
+                    amount: parseFloat(amount),
+                    date: date,
+                    numAccount: numAccount,
                 },
                 { headers }
             );
-            setAlert('Recibo guardado correctamente');
             handleBuscar()
+            setAlert('Recibo guardado correctamente');
             setFolio('')
-            setMonto('')
-            setFecha('')
+            setAmount('')
+            setDate('')
         } catch (error) {
             setError(error.response?.data?.error || 'Error al guardar el recibo');
         }
@@ -131,11 +158,11 @@ export const Impressions = () => {
                     <div className="input-group">
                         <input
                             type="text"
-                            value={numero}
+                            value={numAccount}
                             onChange={(e) => {
                                 const value = e.target.value;
                                 if (/^\d*$/.test(value)) {
-                                    setNumero(value);
+                                    setNumAccount(value);
                                 }
                             }}
                             className="input-field"
@@ -150,9 +177,10 @@ export const Impressions = () => {
 
                     {studentData && (
                         <div className="information">
-                            <label>No.Cuenta: {studentData[0]?.id_cuenta}</label>
-                            <label>Nombre: {studentData[0]?.nombre}</label>
-                            <label>Crédito: {studentData[0]?.credito}</label>
+                            <label><b>No.Cuenta: </b>{studentData[0]?.id_cuenta}</label>
+                            <label><b>Nombre: </b>{studentData[0]?.nombre}</label>
+                            <label><b>Carrera: </b>{studentData[0]?.carrera}</label>
+                            <label><b>Crédito: </b>{studentData[0]?.credito}</label>
                         </div>
                     )}
                 </div>
@@ -186,11 +214,11 @@ export const Impressions = () => {
                                 <label className="input-label">Hojas:</label>
                                 <input
                                     type="text"
-                                    value={hojas}
+                                    value={pages}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         if (/^\d*$/.test(value)) {
-                                            setHojas(value);
+                                            setPages(value);
                                         }
                                     }}
                                     className="input-field "
@@ -199,7 +227,7 @@ export const Impressions = () => {
                             </div>
 
                             <div className="groupLabel">
-                                <label className="input-label">Total: {hojas && `$${hojas}.00`}</label>
+                                <label className="input-label">Total: {pages && `$${pages}.00`}</label>
                             </div>
 
                             <button onClick={handleCobrar} className="button button-charge">
@@ -230,11 +258,11 @@ export const Impressions = () => {
                                 <label className="input-label">Monto:</label>
                                 <input
                                     type="text"
-                                    value={monto}
+                                    value={amount}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         if (/^\d*$/.test(value)) {
-                                            setMonto(value);
+                                            setAmount(value);
                                         }
                                     }}
                                     className="input-field"
@@ -246,9 +274,11 @@ export const Impressions = () => {
                                 <label className="input-label">Fecha:</label>
                                 <input
                                     type="date"
-                                    value={fecha}
-                                    onChange={(e) => setFecha(e.target.value)}
+                                    value={date}
+                                    onChange={(e) => setDate(e.target.value)}
                                     className="input-field"
+                                    min={minFecha}
+                                    max={maxFecha}
                                 />
                             </div>
 
@@ -263,15 +293,16 @@ export const Impressions = () => {
                 Cerrar sesión
             </button>
             {error &&
-                <div className={`messageBox error`}>
+                <div className={`messageBox error ${!showError ? 'hidden' : ''}`}>
                     {error}
                 </div>
             }
             {alert &&
-                <div className={`messageBox success`}>
+                <div className={`messageBox success ${!showAlert ? 'hidden' : ''}`}>
                     {alert}
                 </div>
             }
         </>
     );
 };
+//IO

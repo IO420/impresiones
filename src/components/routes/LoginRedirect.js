@@ -6,5 +6,5 @@ export const LoginRedirect = ({ children }) => {
 
     if (loading) return <p>Cargando...</p>;
 
-    return authenticated ? <Navigate to="/" /> : children;
+    return authenticated ? <Navigate to='/' /> : children;
 };

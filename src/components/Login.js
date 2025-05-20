@@ -13,7 +13,7 @@ export const Login = () => {
 
     const handleLogin = async () => {
         const url = envConfig().apiUrl;
-        setMessage("")
+        setMessage('')
 
         try {
             const response = await axios.post(`${url}/login`, {
@@ -34,36 +34,43 @@ export const Login = () => {
     };
 
     return (
-        <section className="containerLogin">
+        <section className='containerLogin'>
 
-            <div className="login">
-                <h2 className="textHeader">Inicio de sesión</h2>
+            <form
+                className='login'
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    handleLogin();
+                }}
+            >
+                <h2 className='textHeader'>Inicio de sesión</h2>
 
-                <div className="containerInput">
-                    <label className="label">Usuario</label>
+                <div className='containerInput'>
+                    <label className='label'>Usuario</label>
                     <input
-                        type="text"
+                        type='text'
                         value={user}
                         onChange={(e) => setUser(e.target.value)}
-                        placeholder="Coloca tu usuario..."
+                        placeholder='Coloca tu usuario...'
                     />
                 </div>
 
-                <div className="containerInput">
-                    <label className="label">Contraseña</label>
+                <div className='containerInput'>
+                    <label className='label'>Contraseña</label>
                     <input
-                        type="password"
+                        type='password'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Coloca tu contraseña..."
+                        placeholder='Coloca tu contraseña...'
                     />
                 </div>
 
                 <button
-                    className="button button-search"
-                    onClick={handleLogin}>Iniciar sesión
+                    className='button button-search'
+                    type='submit'
+                >Iniciar sesión
                 </button>
-            </div>
+            </form>
             {message &&
                 <div
                     className={`messageBox ${message.includes('exitoso') ? 'success' : 'error'}`}

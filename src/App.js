@@ -8,15 +8,15 @@ import NotFound from './components/NotFound';
 
 function App() {
   return (
-    <div className="App">
-      <div className="impressions-container">
-        <h3 className="impressions-title lineSeparator">IMPRESIONES</h3>
+    <div className='App'>
+      <div className='impressions-container'>
+        <h3 className='impressions-title lineSeparator'>IMPRESIONES</h3>
 
         <BrowserRouter>
           <Routes>
 
             <Route
-              path="/"
+              path='/'
               element={
                 <PrivateRoute>
                   <Impressions />
@@ -26,7 +26,7 @@ function App() {
             </Route>
 
             <Route
-              path="/Login"
+              path='/Login'
               element={
                 <LoginRedirect>
                   <Login />
@@ -35,10 +35,10 @@ function App() {
             >
             </Route>
 
-            <Route path="*" element={<NotFound/>} />
+            <Route path='*' element={<NotFound/>} />
           </Routes>
         </BrowserRouter>
-        <div className="img"></div>
+        <div className='img'></div>
       </div>
     </div>
   );

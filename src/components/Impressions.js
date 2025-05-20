@@ -53,6 +53,11 @@ export const Impressions = () => {
         Authorization: `Bearer ${token}`,
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/Login');
+    };
+
     const handleBuscar = async () => {
         setAlert('')
         setError('')
@@ -71,7 +76,13 @@ export const Impressions = () => {
             const data = response.data;
             setStudentData(data);
         } catch (error) {
-            setError(error.response?.data?.error || 'No se encontró el estudiante');
+            const errorMessage = error.response?.data?.error || 'No se encontró el estudiante';
+
+            if (errorMessage === 'Token inválido') {
+                handleLogout();
+            }
+
+            setError(errorMessage);
             setStudentData(null);
         }
     };
@@ -101,7 +112,13 @@ export const Impressions = () => {
             setAlert('Cobro realizado correctamente');
             setPages('')
         } catch (error) {
-            setError(error.response?.data?.error || 'Error al realizar el cobro');
+            const errorMessage = error.response?.data?.error || 'No se encontró el estudiante';
+
+            if (errorMessage === 'Token inválido') {
+                handleLogout();
+            }
+
+            setError(errorMessage);
         }
     };
 
@@ -141,42 +158,52 @@ export const Impressions = () => {
             setAmount('')
             setDate('')
         } catch (error) {
-            setError(error.response?.data?.error || 'Error al guardar el recibo');
-        }
-    };
+            const errorMessage = error.response?.data?.error || 'No se encontró el estudiante';
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/Login');
+            if (errorMessage === 'Token inválido') {
+                handleLogout();
+            }
+
+            setError(errorMessage);
+        }
     };
 
     return (
         <>
-            <div className="formContainer">
-                <div className="containerInformation">
-                    <label className="input-label">No.Cuenta</label>
-                    <div className="input-group">
-                        <input
-                            type="text"
-                            value={numAccount}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                if (/^\d*$/.test(value)) {
-                                    setNumAccount(value);
-                                }
-                            }}
-                            className="input-field"
-                            placeholder="Coloca un número de cuenta..."
-                            inputMode='numeric'
-                            pattern="[0-9]*"
-                        />
-                        <button onClick={handleBuscar} className="button button-search">
-                            Buscar
-                        </button>
-                    </div>
+            <div className='formContainer'>
+                <div className='containerInformation'>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleBuscar();
+                        }}>
+
+                        <label className='input-label'>No.Cuenta</label>
+                        <div className='input-group'>
+                            <input
+                                type='text'
+                                value={numAccount}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^\d*$/.test(value)) {
+                                        setNumAccount(value);
+                                    }
+                                }}
+                                className='input-field'
+                                placeholder='Coloca un número de cuenta...'
+                                inputMode='numeric'
+                                pattern='[0-9]*'
+                            />
+                            <button
+                                className='button button-search'
+                                type='submit'>
+                                Buscar
+                            </button>
+                        </div>
+                    </form>
 
                     {studentData && (
-                        <div className="information">
+                        <div className='information'>
                             <label><b>No.Cuenta: </b>{studentData[0]?.id_cuenta}</label>
                             <label><b>Nombre: </b>{studentData[0]?.nombre}</label>
                             <label><b>Carrera: </b>{studentData[0]?.carrera}</label>
@@ -187,8 +214,8 @@ export const Impressions = () => {
             </div>
 
             {studentData &&
-                <div className="selection">
-                    <div className="toggle-group">
+                <div className='selection'>
+                    <div className='toggle-group'>
                         <button
                             className={`toggle-button ${view === 'impresiones' ? 'active' : ''}`}
                             onClick={() => setView('impresiones')}
@@ -205,91 +232,108 @@ export const Impressions = () => {
 
 
                     {view === 'impresiones' && (
-                        <div className="impressions">
-                            <div className="groupLabel">
-                                <label className="input-label">Costo: $1.00</label>
-                            </div>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleCobrar();
+                            }}>
 
-                            <div className="input-group">
-                                <label className="input-label">Hojas:</label>
-                                <input
-                                    type="text"
-                                    value={pages}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (/^\d*$/.test(value)) {
-                                            setPages(value);
-                                        }
-                                    }}
-                                    className="input-field "
-                                    placeholder='Numero de hojas a imprimir...'
-                                />
-                            </div>
+                            <div className='impressions'>
+                                <div className='groupLabel'>
+                                    <label className='input-label'>Costo: $1.00</label>
+                                </div>
 
-                            <div className="groupLabel">
-                                <label className="input-label">Total: {pages && `$${pages}.00`}</label>
-                            </div>
+                                <div className='input-group'>
+                                    <label className='input-label'>Hojas:</label>
+                                    <input
+                                        type='text'
+                                        value={pages}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value)) {
+                                                setPages(value);
+                                            }
+                                        }}
+                                        className='input-field '
+                                        placeholder='Numero de hojas a imprimir...'
+                                    />
+                                </div>
 
-                            <button onClick={handleCobrar} className="button button-charge">
-                                Cobrar
-                            </button>
-                        </div>
+                                <div className='groupLabel'>
+                                    <label className='input-label'>Total: {pages && `$${pages}.00`}</label>
+                                </div>
+
+                                <button
+                                    className='button button-charge'
+                                    type='submit'>
+                                    Cobrar
+                                </button>
+                            </div>
+                        </form>
                     )}
 
                     {view === 'recibo' && (
-                        <div className="impressions">
-                            <div className="input-group">
-                                <label className="input-label">Folio:</label>
-                                <input
-                                    type="text"
-                                    value={folio}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (/^\d*$/.test(value)) {
-                                            setFolio(value);
-                                        }
-                                    }}
-                                    className="input-field"
-                                    placeholder='Numero de folio...'
-                                />
-                            </div>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleGuardarRecibo();
+                            }}>
+                            <div className='impressions'>
+                                <div className='input-group'>
+                                    <label className='input-label'>Folio:</label>
+                                    <input
+                                        type='text'
+                                        value={folio}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value)) {
+                                                setFolio(value);
+                                            }
+                                        }}
+                                        className='input-field'
+                                        placeholder='Numero de folio...'
+                                    />
+                                </div>
 
-                            <div className="input-group">
-                                <label className="input-label">Monto:</label>
-                                <input
-                                    type="text"
-                                    value={amount}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (/^\d*$/.test(value)) {
-                                            setAmount(value);
-                                        }
-                                    }}
-                                    className="input-field"
-                                    placeholder='Monto recibido...'
-                                />
-                            </div>
+                                <div className='input-group'>
+                                    <label className='input-label'>Monto:</label>
+                                    <input
+                                        type='text'
+                                        value={amount}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value)) {
+                                                setAmount(value);
+                                            }
+                                        }}
+                                        className='input-field'
+                                        placeholder='Monto recibido...'
+                                    />
+                                </div>
 
-                            <div className="input-group">
-                                <label className="input-label">Fecha:</label>
-                                <input
-                                    type="date"
-                                    value={date}
-                                    onChange={(e) => setDate(e.target.value)}
-                                    className="input-field"
-                                    min={minFecha}
-                                    max={maxFecha}
-                                />
-                            </div>
+                                <div className='input-group'>
+                                    <label className='input-label'>Fecha:</label>
+                                    <input
+                                        type='date'
+                                        value={date}
+                                        onChange={(e) => setDate(e.target.value)}
+                                        className='input-field'
+                                        min={minFecha}
+                                        max={maxFecha}
+                                    />
+                                </div>
 
-                            <button onClick={handleGuardarRecibo} className="button button-search">
-                                Guardar
-                            </button>
-                        </div>
+                                <button
+                                    className='button button-search'
+                                    type='submit'>
+                                    Guardar
+                                </button>
+                            </div>
+                        </form>
                     )}
                 </div>
             }
-            <button onClick={handleLogout} className="button button-logout">
+            <button onClick={handleLogout} className='button button-logout'>
                 Cerrar sesión
             </button>
             {error &&

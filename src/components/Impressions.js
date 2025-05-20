@@ -26,6 +26,10 @@ export const Impressions = () => {
     const handleBuscar = async () => {
         setAlert('')
         setError('')
+        if (!numero) {
+            setError('Ingresa un numero de cuenta')
+            return;
+        }
         try {
             const response = await axios.post(
                 `${url}/student`,
@@ -52,6 +56,10 @@ export const Impressions = () => {
             setError('Error busca denuevo al estudiante');
             return;
         }
+        if (!hojas) {
+            setError('Ingresa el numero de hojas a imprimir')
+            return;
+        }
         try {
             await axios.post(
                 `${url}/impressions`,
@@ -64,6 +72,7 @@ export const Impressions = () => {
             );
             setAlert('Cobro realizado correctamente');
             handleBuscar()
+            setHojas('')
         } catch (error) {
             setError(error.response?.data?.error || 'Error al realizar el cobro');
         }
@@ -74,6 +83,18 @@ export const Impressions = () => {
         setError('')
         if (!studentData) {
             setError('Primero busca un estudiante');
+            return;
+        }
+        if (!folio) {
+            setError('Ingresa el numero de folio')
+            return;
+        }
+        if (!monto) {
+            setError('Ingresa el monto')
+            return;
+        }
+        if (!fecha) {
+            setError('Ingresa la fecha del ticket')
             return;
         }
         try {
@@ -89,6 +110,9 @@ export const Impressions = () => {
             );
             setAlert('Recibo guardado correctamente');
             handleBuscar()
+            setFolio('')
+            setMonto('')
+            setFecha('')
         } catch (error) {
             setError(error.response?.data?.error || 'Error al guardar el recibo');
         }
@@ -108,9 +132,16 @@ export const Impressions = () => {
                         <input
                             type="text"
                             value={numero}
-                            onChange={(e) => setNumero(e.target.value)}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                if (/^\d*$/.test(value)) {
+                                    setNumero(value);
+                                }
+                            }}
                             className="input-field"
                             placeholder="Coloca un número de cuenta..."
+                            inputMode='numeric'
+                            pattern="[0-9]*"
                         />
                         <button onClick={handleBuscar} className="button button-search">
                             Buscar
@@ -156,7 +187,12 @@ export const Impressions = () => {
                                 <input
                                     type="text"
                                     value={hojas}
-                                    onChange={(e) => setHojas(e.target.value)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (/^\d*$/.test(value)) {
+                                            setHojas(value);
+                                        }
+                                    }}
                                     className="input-field "
                                     placeholder='Numero de hojas a imprimir...'
                                 />
@@ -179,7 +215,12 @@ export const Impressions = () => {
                                 <input
                                     type="text"
                                     value={folio}
-                                    onChange={(e) => setFolio(e.target.value)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (/^\d*$/.test(value)) {
+                                            setFolio(value);
+                                        }
+                                    }}
                                     className="input-field"
                                     placeholder='Numero de folio...'
                                 />
@@ -190,7 +231,12 @@ export const Impressions = () => {
                                 <input
                                     type="text"
                                     value={monto}
-                                    onChange={(e) => setMonto(e.target.value)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (/^\d*$/.test(value)) {
+                                            setMonto(value);
+                                        }
+                                    }}
                                     className="input-field"
                                     placeholder='Monto recibido...'
                                 />

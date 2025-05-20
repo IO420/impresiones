@@ -4,6 +4,7 @@ import { Impressions } from './components/Impressions';
 import { Login } from './components/Login';
 import { PrivateRoute } from './components/routes/PrivateRoute';
 import { LoginRedirect } from './components/routes/LoginRedirect';
+import NotFound from './components/NotFound';
 
 function App() {
   return (
@@ -33,6 +34,8 @@ function App() {
               }
             >
             </Route>
+
+            <Route path="*" element={<NotFound/>} />
           </Routes>
         </BrowserRouter>
         <div className="img"></div>

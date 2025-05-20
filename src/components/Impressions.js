@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import axios from 'axios';
+import { envConfig } from '../envConfigurations/EnvConfigurations';
 import './login.css';
 
 export const Impressions = () => {
@@ -8,17 +10,77 @@ export const Impressions = () => {
     const [folio, setFolio] = useState('');
     const [monto, setMonto] = useState('');
     const [fecha, setFecha] = useState('');
+    const [message, setMessage] = useState('');
+    const [studentData, setStudentData] = useState(null);
 
-    const handleBuscar = () => {
-        console.log('Buscar número:', numero);
+    const url = envConfig().apiUrl;
+    const token = localStorage.getItem('token');
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
     };
 
-    const handleCobrar = () => {
-        console.log('Cobrar por hojas:', hojas);
+    const handleBuscar = async () => {
+        try {
+            const response = await axios.get(`${url}/student`, {
+                headers,
+                params: {
+                    numAccount: numero,
+                },
+            });
+            const data = response.data;
+            setStudentData(data);
+            setMessage('Estudiante encontrado');
+        } catch (error) {
+            console.error('Error al buscar:', error);
+            setMessage('No se encontró el estudiante');
+            setStudentData(null);
+        }
     };
 
-    const handleGuardarRecibo = () => {
-        alert(`Recibo guardado:\nFolio: ${folio}\nMonto: ${monto}\nFecha: ${fecha}`);
+    const handleCobrar = async () => {
+        if (!studentData) {
+            setMessage('Primero busca un estudiante');
+            return;
+        }
+        try {
+            await axios.post(
+                `${url}/impressions`,
+                {
+                    numAccount: numero,
+                    pages: parseInt(hojas),
+                    cost: parseInt(hojas),
+                },
+                { headers }
+            );
+            setMessage('Cobro realizado correctamente');
+        } catch (error) {
+            console.error(error);
+            setMessage('Error al realizar el cobro');
+        }
+    };
+
+    const handleGuardarRecibo = async () => {
+        if (!studentData) {
+            setMessage('Primero busca un estudiante');
+            return;
+        }
+        try {
+            await axios.post(
+                `${url}/receipt`,
+                {
+                    fol: folio,
+                    amount: parseFloat(monto),
+                    date: fecha,
+                    numAccount: numero,
+                },
+                { headers }
+            );
+            setMessage('Recibo guardado correctamente');
+        } catch (error) {
+            console.error(error);
+            setMessage('Error al guardar el recibo');
+        }
     };
 
     return (
@@ -66,8 +128,8 @@ export const Impressions = () => {
 
                 {view === 'impresiones' && (
                     <div className="impressions">
-                        <div>
-                            <label className="input-label">Costo: $1.00 peso</label>
+                        <div className="groupLabel">
+                            <label className="input-label">Costo: $1.00</label>
                         </div>
 
                         <div className="input-group">
@@ -76,9 +138,13 @@ export const Impressions = () => {
                                 type="text"
                                 value={hojas}
                                 onChange={(e) => setHojas(e.target.value)}
-                                className="input-field"
+                                className="input-field "
                                 placeholder='Numero de hojas a imprimir...'
                             />
+                        </div>
+
+                        <div className="groupLabel">
+                            <label className="input-label">Total: {hojas && `$${hojas}.00`}</label>
                         </div>
 
                         <button onClick={handleCobrar} className="button button-charge">
@@ -127,6 +193,13 @@ export const Impressions = () => {
                     </div>
                 )}
             </div>
+            {message &&
+                <div
+                    className={`messageBox ${message.includes('exitoso') ? 'success' : 'error'}`}
+                >
+                    {message}
+                </div>
+            }
         </>
     );
 };

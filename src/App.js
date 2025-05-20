@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Impressions } from './components/Impressions';
 import { Login } from './components/Login';
+import { PrivateRoute } from './components/routes/PrivateRoute';
+import { LoginRedirect } from './components/routes/LoginRedirect';
 
 function App() {
   return (
@@ -12,10 +14,24 @@ function App() {
         <BrowserRouter>
           <Routes>
 
-            <Route path="/" element={<Impressions />}>
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Impressions />
+                </PrivateRoute>
+              }
+            >
             </Route>
 
-            <Route path="/Login" element={<Login />}>
+            <Route
+              path="/Login"
+              element={
+                <LoginRedirect>
+                  <Login />
+                </LoginRedirect>
+              }
+            >
             </Route>
           </Routes>
         </BrowserRouter>
